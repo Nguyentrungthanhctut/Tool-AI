@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solver Pro V8 — Trợ lý đối chiếu bài tập Windows | ThanhDevHub</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Cấu hình Tailwind -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        app: {
+                            bg: '#0a0a0a',
+                            surface: '#101010',
+                            panel: '#1a1a1a',
+                            panelLight: '#242424',
+                            accent: '#2d5a88',
+                            accentHover: '#3b73ad',
+                            sky: '#38bdf8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#0a0a0a] text-gray-100 font-sans antialiased selection:bg-[#2d5a88] selection:text-white overflow-x-hidden">
+
+    <!-- Hiệu ứng ánh sáng nền (Ambient Glow) -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-[#2d5a88]/20 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 -right-40 w-[30rem] h-[30rem] bg-[#38bdf8]/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- 1. HEADER / NAVBAR -->
+    <header class="sticky top-0 z-50 bg-[#0a0a0a]/85 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Badge -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2d5a88] to-[#38bdf8] flex items-center justify-center shadow-lg shadow-[#2d5a88]/30 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                        </svg>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-extrabold text-lg tracking-tight text-white">Solver Pro V8</span>
+                        <span class="px-2 py-0.5 text-[11px] font-mono font-medium rounded-full bg-[#2d5a88]/30 text-[#38bdf8] border border-[#38bdf8]/30">by ThanhDevHub</span>
+                    </div>
+                </a>
+
+                <!-- Menu điều hướng Desktop -->
+                <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-gray-300">
+                    <a href="#features" class="hover:text-[#38bdf8] transition-colors">Tính năng</a>
+                    <a href="#demo" class="hover:text-[#38bdf8] transition-colors">Giao diện & Demo</a>
+                    <a href="#guide" class="hover:text-[#38bdf8] transition-colors">Hướng dẫn</a>
+                    <a href="#structure" class="hover:text-[#38bdf8] transition-colors">Cấu trúc dự án</a>
+                </nav>
+
+                <!-- Nút CTA & Menu Mobile -->
+                <div class="flex items-center gap-3">
+                    <a href="#download" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2d5a88] hover:bg-[#3b73ad] text-white text-sm font-semibold shadow-lg shadow-[#2d5a88]/30 transition-all active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Tải bản .EXE</span>
+                    </a>
+                    <button id="mobile-menu-btn" aria-label="Mở menu" class="md:hidden p-2 rounded-xl bg-[#1a1a1a] text-gray-300 hover:text-white border border-white/10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu điều hướng Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#101010] border-b border-white/10 px-4 pt-2 pb-4 space-y-2 text-sm font-medium">
+            <a href="#features" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-[#1a1a1a] hover:text-[#38bdf8]">Tính năng</a>
+            <a href="#demo" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-[#1a1a1a] hover:text-[#38bdf8]">Giao diện & Demo</a>
+            <a href="#guide" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-[#1a1a1a] hover:text-[#38bdf8]">Hướng dẫn</a>
+            <a href="#structure" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-[#1a1a1a] hover:text-[#38bdf8]">Cấu trúc dự án</a>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+        <!-- 2. HERO SECTION + INTERACTIVE UI MOCKUP -->
+        <section id="demo" class="pt-12 pb-20 lg:pt-20 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+                
+                <!-- Cột trái: Nội dung giới thiệu & CTA -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1a1a] border border-white/10 text-xs font-mono text-[#38bdf8]">
+                        <span class="w-2 h-2 rounded-full bg-[#38bdf8] animate-pulse"></span>
+                        <span>Phiên bản V8 • Windows 10/11 (64-bit) • Powered by Gemini API</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.18]">
+                        Solver Pro V8 — <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] to-[#60a5fa]">Trợ lý đối chiếu bài tập</span> luyện tập trên Windows tích hợp Google Gemini API
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl">
+                        Giải pháp gọn nhẹ, độc lập giúp học sinh, sinh viên kiểm tra đáp án nhanh chóng qua thao tác <strong class="text-gray-200 font-medium">chụp vùng màn hình chuẩn DPI</strong>, <strong class="text-gray-200 font-medium">dán thông minh Ctrl+V</strong>, <strong class="text-gray-200 font-medium">cắt vùng từ file ảnh</strong> và tự động dò tìm model Gemini ổn định nhất.
+                    </p>
+
+                    <!-- Các điểm nổi bật nhanh -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-sm text-gray-300">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-5 h-5 rounded-md bg-[#2d5a88]/40 text-[#38bdf8] flex items-center justify-center text-xs font-bold">✓</span>
+                            <span>Chụp vùng màn hình chuẩn DPI Scaling</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-5 h-5 rounded-md bg-[#2d5a88]/40 text-[#38bdf8] flex items-center justify-center text-xs font-bold">✓</span>
+                            <span>Dán thông minh Ctrl+V (Ảnh & Văn bản)</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-5 h-5 rounded-md bg-[#2d5a88]/40 text-[#38bdf8] flex items-center justify-center text-xs font-bold">✓</span>
+                            <span>Cắt vùng trực tiếp từ file ảnh có sẵn</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-5 h-5 rounded-md bg-[#2d5a88]/40 text-[#38bdf8] flex items-center justify-center text-xs font-bold">✓</span>
+                            <span>Tự động dò & xếp hạng Model Gemini</span>
+                        </div>
+                    </div>
+
+                    <!-- 2 Nút CTA chính -->
+                    <div id="download" class="flex flex-col sm:flex-row gap-3.5 pt-3">
+                        <button onclick="triggerDownloadExe()" class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#2d5a88] hover:bg-[#3b73ad] text-white font-semibold text-sm sm:text-base shadow-xl shadow-[#2d5a88]/30 transition-all active:scale-95 cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span>Tải SolverProV8.exe (Windows 64-bit)</span>
+                        </button>
+
+                        <a href="#source-code" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#1a1a1a] hover:bg-[#242424] text-gray-200 font-semibold text-sm sm:text-base border border-white/10 transition-all active:scale-95">
+                            <svg class="w-5 h-5 text-[#38bdf8]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                            </svg>
+                            <span>Xem mã nguồn Python</span>
+                        </a>
+                    </div>
+
+                    <p class="text-xs text-gray-500 font-mono">
+                        * Đóng gói độc lập qua PyInstaller • Không cần cài đặt Python khi dùng bản .EXE
+                    </p>
+                </div>
+
+                <!-- Cột phải: Interactive UI Mockup mô phỏng y hệt app Solver Pro V8 -->
+                <div class="lg:col-span-5 flex flex-col items-center">
+                    <div class="mb-3 flex items-center gap-2 text-xs font-mono text-[#38bdf8] bg-[#1a1a1a] px-3 py-1 rounded-full border border-white/10">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>Trải nghiệm trực tiếp giao diện ứng dụng bên dưới</span>
+                    </div>
+
+                    <!-- Khung cửa sổ Windows App Mockup (380x600 tỷ lệ chuẩn) -->
+                    <div id="app-window" class="w-full max-w-[380px] h-[600px] bg-[#101010] rounded-2xl border border-white/15 shadow-2xl shadow-black/80 flex flex-col overflow-hidden transition-opacity duration-150">
+                        
+                        <!-- Windows Title Bar -->
+                        <div class="h-9 bg-[#181818] border-b border-white/10 px-3.5 flex items-center justify-between select-none">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3.5 h-3.5 rounded bg-[#2d5a88] flex items-center justify-center text-[9px] font-bold text-white">S</div>
+                                <span class="text-xs font-medium text-gray-300">Solver Pro V8 | ThanhDevHub</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <button onclick="resetMockup()" title="Khởi động lại Demo" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10 text-[#38bdf8]">Reset</button>
+                                <span class="w-3 h-3 flex items-center justify-center text-xs hover:text-white cursor-default">─</span>
+                                <span class="w-3 h-3 flex items-center justify-center text-xs hover:text-white cursor-default">□</span>
+                                <span class="w-3 h-3 flex items-center justify-center text-xs hover:text-red-400 cursor-default">✕</span>
+                            </div>
+                        </div>
+
+                        <!-- Vùng nội dung chính của App -->
+                        <div class="flex-1 p-4 flex flex-col justify-between overflow-y-auto">
+                            
+                            <!-- MÀN HÌNH 1: LOADING & NÚT BẮT ĐẦU -->
+                            <div id="screen-splash" class="my-auto px-2 flex flex-col items-center text-center">
+                                <h2 class="text-2xl font-extrabold tracking-wide text-white">SOLVER PRO V8</h2>
+                                <p class="text-xs font-bold text-[#4da6ff] mt-1 mb-7">Developed by ThanhDevHub</p>
+
+                                <p id="splash-msg" class="text-xs text-gray-400 mb-2">Đang khởi tạo hệ thống... (0%)</p>
+
+                                <!-- Thanh Progressbar -->
+                                <div class="w-full h-3 bg-[#242424] rounded-md overflow-hidden mb-6 border border-white/5">
+                                    <div id="splash-bar" class="h-full bg-[#2d5a88] transition-all duration-75" style="width: 0%;"></div>
+                                </div>
+
+                                <button id="btn-start" disabled onclick="goToLogin()" class="w-full py-2.5 rounded-lg bg-[#333333] text-[#888888] font-bold text-sm transition-all">
+                                    BẮT ĐẦU
+                                </button>
+                            </div>
+
+                            <!-- MÀN HÌNH 2: DÁN API KEY -->
+                            <div id="screen-login" class="hidden flex-col space-y-3 pt-2">
+                                <div>
+                                    <h2 class="text-xl font-extrabold text-white">SOLVER PRO / V8</h2>
+                                    <p class="text-xs font-semibold text-gray-400 mt-1">Kết nối Gemini API</p>
+                                </div>
+
+                                <div class="pt-2">
+                                    <input id="mock-api-input" type="password" value="AIzaSyDemoThanhDevHub2026Key" placeholder="Nhập hoặc dán Gemini API Key..." class="w-full px-3 py-2.5 rounded-lg bg-[#242424] text-white text-sm font-mono border border-white/10 focus:outline-none focus:border-[#38bdf8]">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="mockPasteApi()" class="py-2 px-3 rounded-lg bg-[#242424] hover:bg-[#323232] text-white text-xs font-medium transition-colors cursor-pointer">
+                                        Dán API Key
+                                    </button>
+                                    <button id="btn-toggle-key" onclick="mockToggleKey()" class="py-2 px-3 rounded-lg bg-[#242424] hover:bg-[#323232] text-white text-xs font-medium transition-colors cursor-pointer">
+                                        Hiện Key
+                                    </button>
+                                </div>
+
+                                <button onclick="mockConnectApi()" class="w-full py-2.5 rounded-lg bg-[#2d5a88] hover:bg-[#3b73ad] text-white text-xs font-bold transition-colors cursor-pointer">
+                                    Kiểm tra & Kết nối
+                                </button>
+
+                                <p id="login-status" class="text-xs text-gray-400 leading-relaxed pt-1">
+                                    Nhập hoặc dán Gemini API Key để tiếp tục.
+                                </p>
+                            </div>
+
+                            <!-- MÀN HÌNH 3: LÀM VIỆC CHÍNH (HOME) -->
+                            <div id="screen-home" class="hidden flex-col h-full justify-between space-y-2">
+                                <div class="space-y-1.5">
+                                    <div class="flex items-center justify-between">
+                                        <h2 class="text-base font-extrabold text-white">SOLVER PRO / V8</h2>
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400">gemini-2.5-flash</span>
+                                    </div>
+                                    <p id="home-status" class="text-[11px] text-gray-400 truncate">gemini-2.5-flash | Sẵn sàng</p>
+
+                                    <!-- Ô nhập bài tập -->
+                                    <textarea id="mock-entry" rows="3" placeholder="Dán hoặc nhập đề bài luyện tập tại đây..." class="w-full p-2 rounded-lg bg-[#242424] text-white text-xs resize-none border border-white/5 focus:outline-none focus:border-[#38bdf8]">Tìm nguyên hàm của hàm số f(x) = 3x² + 2x - 1 và tính tích phân từ 0 đến 2.</textarea>
+
+                                    <!-- Hàng nút 1 -->
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <button onclick="mockAction('capture')" class="py-2 px-2 rounded-lg bg-[#2d5a88] hover:bg-[#3b73ad] text-white text-[11px] font-bold transition-colors cursor-pointer">
+                                            Chụp vùng màn hình
+                                        </button>
+                                        <button onclick="mockAction('paste')" class="py-2 px-2 rounded-lg bg-[#242424] hover:bg-[#323232] text-white text-[11px] transition-colors cursor-pointer">
+                                            Dán (Text / Ảnh)
+                                        </button>
+                                    </div>
+
+                                    <!-- Hàng nút 2 -->
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <button onclick="mockAction('solve_text')" class="py-2 px-2 rounded-lg bg-[#242424] hover:bg-[#323232] text-white text-[11px] transition-colors cursor-pointer">
+                                            Giải văn bản
+                                        </button>
+                                        <button onclick="mockAction('crop')" class="py-2 px-2 rounded-lg bg-[#242424] hover:bg-[#323232] text-white text-[11px] transition-colors cursor-pointer">
+                                            Cắt từ file ảnh
+                                        </button>
+                                    </div>
+
+                                    <button onclick="mockAction('choose_img')" class="w-full py-1.5 px-2 rounded-lg bg-[#242424] hover:bg-[#323232] text-white text-[11px] transition-colors cursor-pointer">
+                                        Chọn file ảnh giải ngay
+                                    </button>
+                                </div>
+
+                                <!-- Khu vực kết quả đối chiếu -->
+                                <div class="flex-1 flex flex-col min-h-0 pt-1">
+                                    <span class="text-[11px] font-bold text-gray-300 mb-1">Kết quả đối chiếu</span>
+                                    <div id="mock-result" class="flex-1 p-2.5 rounded-lg bg-[#242424] text-gray-200 text-xs leading-relaxed overflow-y-auto font-sans border border-white/5">
+                                        <p class="text-[#38bdf8] font-semibold mb-1">Câu 1:</p>
+                                        <p>• Nguyên hàm: F(x) = ∫(3x² + 2x - 1)dx = x³ + x² - x + C</p>
+                                        <p>• Tích phân từ 0 → 2: F(2) - F(0) = (8 + 4 - 2) - 0 = <strong>10</strong></p>
+                                        <p class="text-gray-400 text-[11px] mt-1.5">✓ Kiểm chứng: Đạo hàm F'(x) = 3x² + 2x - 1 khớp đề bài.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Thanh công cụ dưới cùng -->
+                                <div class="flex items-center justify-between pt-1.5 gap-2">
+                                    <button onclick="mockCopyResult()" class="px-2.5 py-1 rounded bg-[#242424] hover:bg-[#323232] text-white text-[11px] cursor-pointer">
+                                        Sao chép
+                                    </button>
+                                    <div class="flex items-center gap-1.5" title="Độ mờ cửa sổ (75% - 100%)">
+                                        <span class="text-[10px] text-gray-400">Độ mờ</span>
+                                        <input type="range" min="75" max="100" value="100" oninput="adjustMockOpacity(this.value)" class="w-20 accent-[#2d5a88] cursor-pointer">
+                                    </div>
+                                    <button onclick="goToLogin()" class="px-2.5 py-1 rounded bg-[#242424] hover:bg-[#323232] text-white text-[11px] cursor-pointer">
+                                        Đổi API
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer Copyright cố định của App -->
+                        <div class="bg-[#0a0a0a] py-1.5 text-center border-t border-white/5">
+                            <span class="text-[10px] font-bold text-[#777777]">© 2026 ThanhDevHub • All Rights Reserved</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. TÍNH NĂNG NỔI BẬT (FEATURES GRID - 6 THẺ) -->
+        <section id="features" class="py-20 bg-[#101010]/70 border-y border-white/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-14">
+                    <span class="text-xs font-mono uppercase tracking-wider text-[#38bdf8]">Tính năng cốt lõi</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Tối ưu tốc độ đối chiếu bài tập trên Windows</h2>
+                    <p class="text-gray-400 text-sm sm:text-base mt-3">
+                        Được thiết kế tinh gọn bằng thư viện chuẩn Python & Pillow, không cồng kềnh, phản hồi bất đồng bộ mượt mà không treo giao diện.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Thẻ 1 -->
+                    <div class="p-6 rounded-2xl bg-[#161616] border border-white/10 hover:border-[#38bdf8]/40 transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-[#2d5a88]/25 text-[#38bdf8] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Chụp vùng màn hình chuẩn DPI Scaling</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Tích hợp <code class="text-xs font-mono text-[#38bdf8]">SetProcessDpiAwareness</code> giúp khoanh vùng chụp trực tiếp trên màn hình Full HD/2K bật Scaling 125%–150% mà không bao giờ bị lệch tọa độ.
+                        </p>
+                    </div>
+
+                    <!-- Thẻ 2 -->
+                    <div class="p-6 rounded-2xl bg-[#161616] border border-white/10 hover:border-[#38bdf8]/40 transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-[#2d5a88]/25 text-[#38bdf8] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Dán thông minh từ Clipboard (Ctrl+V)</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Tự động nhận diện dữ liệu trong Clipboard sau khi bạn nhấn <code class="text-xs font-mono text-gray-200">Win + Shift + S</code> hoặc copy văn bản, chuyển thẳng ảnh tới AI hoặc điền vào khung nhập liệu.
+                        </p>
+                    </div>
+
+                    <!-- Thẻ 3 -->
+                    <div class="p-6 rounded-2xl bg-[#161616] border border-white/10 hover:border-[#38bdf8]/40 transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-[#2d5a88]/25 text-[#38bdf8] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Cắt vùng trực tiếp từ file ảnh</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Mở file ảnh đề thi (<code class="text-xs font-mono text-gray-200">PNG, JPG, WEBP</code>), tự động xoay đúng chiều EXIF, kéo chọn riêng từng câu hỏi và nén thông minh trước khi gửi đi.
+                        </p>
+                    </div>
+
+                    <!-- Thẻ 4 -->
+                    <div class="p-6 rounded-2xl bg-[#161616] border border-white/10 hover:border-[#38bdf8]/40 transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-[#2d5a88]/25 text-[#38bdf8] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Tự động xếp hạng & dự phòng Model</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Tự quét danh sách model Gemini khả dụng trên API Key, ưu tiên các bản ổn định (<code class="text-xs font-mono text-[#38bdf8]">flash / lite</code>) mới nhất và tự chuyển sang model dự phòng nếu gặp lỗi.
+                        </p>
+                    </div>
+
+                    <!-- Thẻ 5 -->
+                    <div class="p-6 rounded-2xl bg-[#161616] border border-white/10 hover:border-[#38bdf8]/40 transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-[#2d5a88]/25 text-[#38bdf8] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Lưu trữ API Key cục bộ an toàn</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Tự động lưu khóa vào <code class="text-xs font-mono text-gray-200">%APPDATA%\SolverProV8\config.json</code> sau lần xác thực đầu tiên, đồng thời ẩn/che dấu key trong toàn bộ thông báo lỗi.
+                        </p>
+                    </div>
+
+                    <!-- Thẻ 6 -->
+                    <div class="p-6 rounded-2xl bg-[#161616] border border-white/10 hover:border-[#38bdf8]/40 transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-[#2d5a88]/25 text-[#38bdf8] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2">Chế độ cửa sổ nổi & chỉnh độ mờ 75%–100%</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Thanh trượt điều chỉnh độ trong suốt cửa sổ ngay góc dưới giúp đặt ứng dụng đè lên file PDF đề cương mà vẫn quan sát rõ nội dung bên dưới, kèm công thức Unicode dễ đọc.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. HƯỚNG DẪN SỬ DỤNG (2 TAB CHUYỂN ĐỔI) -->
+        <section id="guide" class="py-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <span class="text-xs font-mono uppercase tracking-wider text-[#38bdf8]">Bắt đầu nhanh</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Hướng dẫn cài đặt & sử dụng</h2>
+                <p class="text-gray-400 text-sm sm:text-base mt-2">Chọn phương thức khởi chạy phù hợp với nhu cầu của bạn</p>
+            </div>
+
+            <!-- Thanh chuyển Tab -->
+            <div class="flex flex-col sm:flex-row justify-center gap-3 mb-8">
+                <button id="tab-btn-exe" onclick="switchGuideTab('exe')" class="px-5 py-3 rounded-xl bg-[#2d5a88] text-white font-semibold text-sm shadow-lg shadow-[#2d5a88]/25 transition-all cursor-pointer">
+                    Cách 1: Chạy file .EXE (Khuyên dùng)
+                </button>
+                <button id="tab-btn-py" onclick="switchGuideTab('py')" class="px-5 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#242424] text-gray-300 font-semibold text-sm border border-white/10 transition-all cursor-pointer">
+                    Cách 2: Chạy từ mã nguồn Python
+                </button>
+            </div>
+
+            <!-- Nội dung Tab 1: EXE -->
+            <div id="tab-content-exe" class="p-6 sm:p-8 rounded-2xl bg-[#141414] border border-white/10 space-y-5">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Chạy trực tiếp file thực thi độc lập</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Phù hợp cho máy Windows 10/11 (64-bit) chưa cài đặt Python</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-mono text-xs">dist\SolverProV8.exe</span>
+                </div>
+
+                <ol class="space-y-3.5 text-sm text-gray-300">
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-[#2d5a88] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <span>Mở thư mục <code class="font-mono text-[#38bdf8]">dist</code> và nhấp đúp vào file <code class="font-mono text-white bg-white/5 px-1.5 py-0.5 rounded">SolverProV8.exe</code>.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-[#2d5a88] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <span>Chờ thanh tiến trình khởi động chạy hoàn tất <strong class="text-white">100%</strong>, sau đó nhấn nút <strong class="text-[#38bdf8]">BẮT ĐẦU →</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-[#2d5a88] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <span>Nhấn nút <strong class="text-white">Dán API Key</strong> (hoặc nhập trực tiếp vào ô) → nhấn <strong class="text-[#38bdf8]">Kiểm tra & Kết nối</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-[#2d5a88] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <span>Nếu Windows SmartScreen hiện cảnh báo do file tự đóng gói chưa ký số thương mại, chọn <strong class="text-white">More info</strong> → <strong class="text-white">Run anyway</strong>.</span>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Nội dung Tab 2: Python -->
+            <div id="tab-content-py" class="hidden p-6 sm:p-8 rounded-2xl bg-[#141414] border border-white/10 space-y-5">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Chạy từ mã nguồn & tự đóng gói PyInstaller</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Yêu cầu Python 3.10 trở lên (đã tích chọn Add Python to PATH)</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-[#2d5a88]/30 text-[#38bdf8] font-mono text-xs">solver_pro_v8.py</span>
+                </div>
+
+                <div class="space-y-4 text-sm text-gray-300">
+                    <div>
+                        <p class="font-medium text-white mb-2">Bước 1: Cài đặt thư viện xử lý ảnh Pillow & chạy ứng dụng</p>
+                        <div class="relative bg-[#0a0a0a] rounded-xl p-4 font-mono text-xs text-gray-200 border border-white/10 flex items-center justify-between gap-4">
+                            <pre class="overflow-x-auto"><code>pip install pillow
+python solver_pro_v8.py</code></pre>
+                            <button onclick="copySnippet('pip install pillow\npython solver_pro_v8.py', this)" class="px-3 py-1.5 rounded-lg bg-[#242424] hover:bg-[#323232] text-[#38bdf8] text-xs shrink-0 cursor-pointer">Sao chép</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="font-medium text-white mb-2">Bước 2: Tự đóng gói thành file .EXE mới (Tùy chọn)</p>
+                        <div class="relative bg-[#0a0a0a] rounded-xl p-4 font-mono text-xs text-gray-200 border border-white/10 flex items-center justify-between gap-4">
+                            <pre class="overflow-x-auto"><code>pip install pyinstaller
+pyinstaller --noconsole --onefile --name SolverProV8 solver_pro_v8.py</code></pre>
+                            <button onclick="copySnippet('pip install pyinstaller\npyinstaller --noconsole --onefile --name SolverProV8 solver_pro_v8.py', this)" class="px-3 py-1.5 rounded-lg bg-[#242424] hover:bg-[#323232] text-[#38bdf8] text-xs shrink-0 cursor-pointer">Sao chép</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hướng dẫn lấy API Key miễn phí tại Google AI Studio -->
+            <div class="mt-6 p-5 rounded-2xl bg-gradient-to-r from-[#2d5a88]/20 to-[#141414] border border-[#38bdf8]/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                        <span class="text-[#38bdf8]">🔑</span> Cách lấy Gemini API Key miễn phí
+                    </h4>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Truy cập <strong>Google AI Studio</strong> → Đăng nhập tài khoản Google → Chọn <strong>Get API key</strong> → <strong>Create API key</strong> → Sao chép chuỗi khóa và dán vào ứng dụng.
+                    </p>
+                </div>
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-[#242424] hover:bg-[#323232] text-[#38bdf8] text-xs font-semibold border border-white/10 shrink-0 transition-colors">
+                    Mở Google AI Studio ↗
+                </a>
+            </div>
+        </section>
+
+        <!-- 5. CẤU TRÚC THƯ MỤC DỰ ÁN -->
+        <section id="structure" class="py-20 bg-[#101010]/70 border-t border-white/10">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-xs font-mono uppercase tracking-wider text-[#38bdf8]">Kiến trúc đóng gói</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Cấu trúc thư mục dự án</h2>
+                    <p class="text-gray-400 text-sm sm:text-base mt-2">Hiểu rõ vai trò của từng thành phần sau khi đóng gói bằng PyInstaller</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <!-- Cây thư mục -->
+                    <div class="lg:col-span-5 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 font-mono text-xs sm:text-sm text-gray-300 flex flex-col justify-center">
+                        <div class="flex items-center gap-2 text-gray-500 pb-3 mb-3 border-b border-white/10 text-xs">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500/70"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/70"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></span>
+                            <span class="ml-1">SolverProV8 /</span>
+                        </div>
+                        <pre class="leading-7 overflow-x-auto"><code>├── <span class="text-[#38bdf8] font-semibold">dist/</span>
+│   └── <span class="text-emerald-400 font-semibold">SolverProV8.exe</span>
+├── <span class="text-amber-300">build/</span>
+├── <span class="text-purple-400">SolverProV8.spec</span>
+├── <span class="text-sky-300">solver_pro_v8.py</span>
+└── <span class="text-gray-400">README.md</span></code></pre>
+                    </div>
+
+                    <!-- Giải thích từng mục -->
+                    <div class="lg:col-span-7 space-y-3">
+                        <div class="p-4 rounded-xl bg-[#161616] border border-white/10">
+                            <div class="flex items-center justify-between">
+                                <span class="font-mono text-sm font-bold text-emerald-400">dist/SolverProV8.exe</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300">Quan trọng nhất</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">File thực thi chính chạy độc lập trên Windows. Khi chia sẻ phần mềm cho người khác dùng ngay, bạn chỉ cần gửi duy nhất file này.</p>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-[#161616] border border-white/10">
+                            <span class="font-mono text-sm font-bold text-sky-300">solver_pro_v8.py</span>
+                            <p class="text-xs text-gray-400 mt-1">Mã nguồn gốc Python chứa toàn bộ giao diện Tkinter, xử lý DPI Scaling, nén ảnh Pillow và gọi API Gemini.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="p-4 rounded-xl bg-[#161616] border border-white/10">
+                                <span class="font-mono text-sm font-bold text-amber-300">build/</span>
+                                <p class="text-xs text-gray-400 mt-1">Thư mục chứa file biên dịch tạm của PyInstaller (có thể xóa khi dọn dẹp).</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-[#161616] border border-white/10">
+                                <span class="font-mono text-sm font-bold text-purple-400">SolverProV8.spec</span>
+                                <p class="text-xs text-gray-400 mt-1">File cấu hình đóng gói PyInstaller (lưu thông số <code class="text-gray-300">--onefile --noconsole</code>).</p>
+                            </div>
+                        </div>
+
+                        <div id="source-code" class="p-4 rounded-xl bg-[#161616] border border-white/10">
+                            <span class="font-mono text-sm font-bold text-gray-200">README.md</span>
+                            <p class="text-xs text-gray-400 mt-1">Tài liệu hướng dẫn sử dụng chi tiết cho cả bản chạy <code class="text-gray-300">.EXE</code> và bản chạy từ mã nguồn Python.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 6. FOOTER -->
+    <footer class="bg-[#080808] border-t border-white/10 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-[#2d5a88] flex items-center justify-center text-white font-bold text-xs">S</div>
+                <span class="text-sm font-bold text-white">Solver Pro V8</span>
+                <span class="text-xs text-gray-500">•</span>
+                <span class="text-xs font-semibold text-[#777777]">© 2026 ThanhDevHub • All Rights Reserved</span>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-gray-400">
+                <a href="#features" class="hover:text-[#38bdf8] transition-colors">Tính năng</a>
+                <a href="#demo" class="hover:text-[#38bdf8] transition-colors">Demo trực tiếp</a>
+                <a href="#guide" class="hover:text-[#38bdf8] transition-colors">Hướng dẫn</a>
+                <a href="#structure" class="hover:text-[#38bdf8] transition-colors">Cấu trúc dự án</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Hộp thông báo Toast (thay thế hoàn toàn alert()) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm px-4 py-3 rounded-xl bg-[#1a1a1a] text-white text-xs font-medium border border-[#38bdf8]/40 shadow-2xl flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-[#38bdf8]"></span>
+        <span id="toast-msg">Thông báo</span>
+    </div>
+
+    <!-- JAVASCRIPT ĐIỀU KHIỂN DEMO & TƯƠNG TÁC -->
+    <script>
+        // Toggle Mobile Menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Toast notification helper
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.textContent = message;
+            toast.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        // Giả lập tải xuống file EXE
+        function triggerDownloadExe() {
+            showToast('Đang chuẩn bị gói cài đặt SolverProV8.exe (Windows 64-bit)...');
+            setTimeout(() => {
+                showToast('Mẹo: Đặt file SolverProV8.exe vào thư mục riêng và dán Gemini API Key để bắt đầu!');
+            }, 1400);
+        }
+
+        // Sao chép lệnh terminal
+        function copySnippet(text, btn) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            const oldText = btn.textContent;
+            btn.textContent = 'Đã chép ✓';
+            setTimeout(() => btn.textContent = oldText, 1800);
+            showToast('Đã sao chép lệnh vào Clipboard.');
+        }
+
+        // Chuyển Tab Hướng dẫn
+        function switchGuideTab(tab) {
+            const btnExe = document.getElementById('tab-btn-exe');
+            const btnPy = document.getElementById('tab-btn-py');
+            const contentExe = document.getElementById('tab-content-exe');
+            const contentPy = document.getElementById('tab-content-py');
+
+            if (tab === 'exe') {
+                btnExe.className = 'px-5 py-3 rounded-xl bg-[#2d5a88] text-white font-semibold text-sm shadow-lg shadow-[#2d5a88]/25 transition-all cursor-pointer';
+                btnPy.className = 'px-5 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#242424] text-gray-300 font-semibold text-sm border border-white/10 transition-all cursor-pointer';
+                contentExe.classList.remove('hidden');
+                contentPy.classList.add('hidden');
+            } else {
+                btnPy.className = 'px-5 py-3 rounded-xl bg-[#2d5a88] text-white font-semibold text-sm shadow-lg shadow-[#2d5a88]/25 transition-all cursor-pointer';
+                btnExe.className = 'px-5 py-3 rounded-xl bg-[#1a1a1a] hover:bg-[#242424] text-gray-300 font-semibold text-sm border border-white/10 transition-all cursor-pointer';
+                contentPy.classList.remove('hidden');
+                contentExe.classList.add('hidden');
+            }
+        }
+
+        // --- LOGIC MÔ PHỎNG GIAO DIỆN APP SOLVER PRO V8 ---
+        let splashInterval = null;
+
+        function startSplashAnimation() {
+            clearInterval(splashInterval);
+            let val = 0;
+            const bar = document.getElementById('splash-bar');
+            const msg = document.getElementById('splash-msg');
+            const btn = document.getElementById('btn-start');
+
+            bar.style.width = '0%';
+            btn.disabled = true;
+            btn.textContent = 'BẮT ĐẦU';
+            btn.className = 'w-full py-2.5 rounded-lg bg-[#333333] text-[#888888] font-bold text-sm transition-all';
+
+            const steps = [
+                [20, 'Đang tải giao diện & DPI Scaling...'],
+                [45, 'Đang nạp cấu hình người dùng...'],
+                [75, 'Đang chuẩn bị kết nối Gemini API...'],
+                [100, 'Hệ thống đã sẵn sàng!']
+            ];
+
+            splashInterval = setInterval(() => {
+                val += 4;
+                if (val <= 100) {
+                    bar.style.width = val + '%';
+                    let prefix = 'Đang khởi tạo...';
+                    for (const [threshold, text] of steps) {
+                        if (val <= threshold) {
+                            prefix = text;
+                            break;
+                        }
+                    }
+                    msg.textContent = `${prefix} (${val}%)`;
+                } else {
+                    clearInterval(splashInterval);
+                    btn.disabled = false;
+                    btn.textContent = 'BẮT ĐẦU →';
+                    btn.className = 'w-full py-2.5 rounded-lg bg-[#2d5a88] hover:bg-[#3b73ad] text-white font-bold text-sm transition-all cursor-pointer shadow-lg shadow-[#2d5a88]/30';
+                }
+            }, 45);
+        }
+
+        function resetMockup() {
+            document.getElementById('screen-splash').classList.remove('hidden');
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-login').classList.remove('flex');
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-home').classList.remove('flex');
+            startSplashAnimation();
+        }
+
+        function goToLogin() {
+            document.getElementById('screen-splash').classList.add('hidden');
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-home').classList.remove('flex');
+
+            const loginScreen = document.getElementById('screen-login');
+            loginScreen.classList.remove('hidden');
+            loginScreen.classList.add('flex');
+        }
+
+        function mockPasteApi() {
+            const input = document.getElementById('mock-api-input');
+            input.value = 'AIzaSyThanhDevHub_GeminiPro_Key99';
+            document.getElementById('login-status').textContent = 'Đã dán API Key từ Clipboard.';
+        }
+
+        function mockToggleKey() {
+            const input = document.getElementById('mock-api-input');
+            const btn = document.getElementById('btn-toggle-key');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Ẩn Key';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Hiện Key';
+            }
+        }
+
+        function mockConnectApi() {
+            const input = document.getElementById('mock-api-input');
+            const statusEl = document.getElementById('login-status');
+            if (!input.value.trim()) {
+                statusEl.textContent = 'Vui lòng nhập hoặc dán API Key.';
+                return;
+            }
+            statusEl.textContent = 'Đang gọi gemini-2.5-flash...';
+            setTimeout(() => {
+                document.getElementById('screen-login').classList.add('hidden');
+                document.getElementById('screen-login').classList.remove('flex');
+                const homeScreen = document.getElementById('screen-home');
+                homeScreen.classList.remove('hidden');
+                homeScreen.classList.add('flex');
+                showToast('Kết nối thành công model gemini-2.5-flash!');
+            }, 650);
+        }
+
+        function mockAction(type) {
+            const status = document.getElementById('home-status');
+            const result = document.getElementById('mock-result');
+            const entry = document.getElementById('mock-entry').value.trim();
+
+            status.textContent = 'Đang giải bài với gemini-2.5-flash...';
+            result.innerHTML = '<p class="text-gray-400 animate-pulse">Đang phân tích dữ kiện và đối chiếu đáp án...</p>';
+
+            setTimeout(() => {
+                status.textContent = 'gemini-2.5-flash | Sẵn sàng';
+                if (type === 'capture') {
+                    result.innerHTML = `
+                        <p class="text-[#38bdf8] font-semibold mb-1">[Ảnh chụp vùng màn hình]</p>
+                        <p><strong>Câu 12:</strong> Phương trình log₂(x - 1) = 3</p>
+                        <p>• Điều kiện: x > 1</p>
+                        <p>• Giải: x - 1 = 2³ = 8 ⇔ <strong>x = 9</strong></p>
+                        <p class="text-gray-400 text-[11px] mt-1">✓ Kiểm chứng: log₂(9 - 1) = log₂(8) = 3 (Đúng).</p>
+                    `;
+                } else if (type === 'paste') {
+                    result.innerHTML = `
+                        <p class="text-[#38bdf8] font-semibold mb-1">[Dán nhanh Clipboard]</p>
+                        <p><strong>Bài toán:</strong> Tính vận tốc tức thời tại t = 3s của s(t) = 2t³ - 5t + 1.</p>
+                        <p>• v(t) = s'(t) = 6t² - 5</p>
+                        <p>• Tại t = 3: v(3) = 6(9) - 5 = <strong>49 m/s</strong></p>
+                    `;
+                } else if (type === 'crop' || type === 'choose_img') {
+                    result.innerHTML = `
+                        <p class="text-[#38bdf8] font-semibold mb-1">[Vùng ảnh đề bài đã chọn]</p>
+                        <p><strong>Đáp án trắc nghiệm:</strong> Chọn <strong>B. 2√3</strong></p>
+                        <p>• Bước kiểm chứng: Áp dụng định lý cosin: a² = b² + c² - 2bc·cos(60°) = 4 + 16 - 8 = 12 ⇒ a = √12 = 2√3.</p>
+                    `;
+                } else {
+                    const previewTxt = entry ? entry.slice(0, 55) + (entry.length > 55 ? '...' : '') : 'Bài tập văn bản';
+                    result.innerHTML = `
+                        <p class="text-[#38bdf8] font-semibold mb-1">Đối chiếu: "${previewTxt}"</p>
+                        <p>• Đáp án rút gọn: <strong>x = 10</strong></p>
+                        <p class="text-gray-400 text-[11px] mt-1">✓ Kiểm chứng: Thế ngược kết quả vào biểu thức ban đầu thỏa mãn điều kiện bài toán.</p>
+                    `;
+                }
+            }, 600);
+        }
+
+        function adjustMockOpacity(val) {
+            document.getElementById('app-window').style.opacity = val / 100;
+        }
+
+        function mockCopyResult() {
+            const text = document.getElementById('mock-result').innerText;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            document.getElementById('home-status').textContent = 'Đã sao chép kết quả.';
+            showToast('Đã sao chép kết quả đối chiếu!');
+        }
+
+        // Khởi chạy hiệu ứng loading ngay khi tải trang
+        window.addEventListener('DOMContentLoaded', startSplashAnimation);
+    </script>
+</body>
+</html>
