@@ -1,4 +1,5 @@
 import ctypes
+import sys
 import tkinter as tk
 from tkinter import ttk, filedialog
 from PIL import Image, ImageTk, ImageOps, ImageGrab
@@ -24,6 +25,24 @@ SYSTEM_PROMPT = (
     "Trình bày công thức toán học bằng ký tự Unicode dễ đọc (ví dụ: x², √x, ∫, π, ≤, ≥, ≠, →), "
     "không dùng cú pháp LaTeX thô như $ hoặc \\frac. Nếu thiếu dữ kiện, hãy nói rõ."
 )
+
+
+def resource_path(rel_path):
+    base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_dir, rel_path)
+
+
+def load_logo_photo(size):
+    for candidate in (resource_path('logo.jpg'), os.path.join(os.getcwd(), 'logo.jpg')):
+        if os.path.isfile(candidate):
+            try:
+                with Image.open(candidate) as im:
+                    im = ImageOps.exif_transpose(im).convert('RGBA')
+                    im.thumbnail((size, size), Image.LANCZOS)
+                    return ImageTk.PhotoImage(im)
+            except Exception:
+                pass
+    return None
 
 
 def load_saved_key():
@@ -132,8 +151,13 @@ def image_to_part(img):
 def main():
     root = tk.Tk()
     root.title('Solver Pro V8 | ThanhDevHub')
-    root.geometry('380x600')
-    root.minsize(360, 500)
+    root.geometry('380x610')
+    root.minsize(360, 510)
+
+    # Đặt icon cửa sổ từ logo.jpg nếu có
+    win_icon = load_logo_photo(64)
+    if win_icon:
+        root.iconphoto(True, win_icon)
 
     bg = '#101010'
     panel = '#242424'
@@ -164,6 +188,7 @@ def main():
     busy = False
     buttons = []
     result = None
+    logo_refs = []
 
     # Footer Copyright cố định ở đáy cửa sổ
     footer = tk.Frame(root, bg='#0a0a0a')
@@ -178,8 +203,18 @@ def main():
 
     def clear():
         buttons.clear()
+        logo_refs.clear()
         for w in frame.winfo_children():
             w.destroy()
+
+    def header_with_logo(title_text, size=16):
+        hdr = tk.Frame(frame, bg=bg)
+        hdr.pack(fill='x', pady=(0, 4))
+        small_logo = load_logo_photo(28)
+        if small_logo:
+            logo_refs.append(small_logo)
+            tk.Label(hdr, image=small_logo, bg=bg).pack(side='left', padx=(0, 8))
+        tk.Label(hdr, text=title_text, bg=bg, fg=fg, font=('Segoe UI', size, 'bold')).pack(side='left')
 
     def label(t, size=12, anchor='w', color=fg):
         lbl = tk.Label(frame, text=t, bg=bg, fg=color, font=('Segoe UI', size, 'bold'))
@@ -203,7 +238,7 @@ def main():
     def state():
         tk.Label(frame, textvariable=status, bg=bg, fg='#bcbcbc', wraplength=340, justify='left').pack(fill='x', pady=4)
 
-    # --- BƯỚC 1: MÀN HÌNH LOADING & NÚT BẮT ĐẦU ---
+    # --- BƯỚC 1: MÀN HÌNH LOADING & LOGO ---
     def splash():
         root.unbind('<Control-v>')
         clear()
@@ -211,14 +246,19 @@ def main():
         box = tk.Frame(frame, bg=bg)
         box.pack(expand=True, fill='x', padx=10)
 
-        tk.Label(box, text='SOLVER PRO V8', bg=bg, fg=fg, font=('Segoe UI', 22, 'bold')).pack(pady=(10, 2))
-        tk.Label(box, text='Developed by ThanhDevHub', bg=bg, fg='#4da6ff', font=('Segoe UI', 10, 'bold')).pack(pady=(0, 24))
+        splash_logo = load_logo_photo(84)
+        if splash_logo:
+            logo_refs.append(splash_logo)
+            tk.Label(box, image=splash_logo, bg=bg).pack(pady=(6, 10))
+
+        tk.Label(box, text='SOLVER PRO V8', bg=bg, fg=fg, font=('Segoe UI', 21, 'bold')).pack(pady=(2, 2))
+        tk.Label(box, text='Developed by ThanhDevHub', bg=bg, fg='#4da6ff', font=('Segoe UI', 10, 'bold')).pack(pady=(0, 20))
 
         load_msg = tk.StringVar(value='Đang khởi tạo hệ thống... 0%')
         tk.Label(box, textvariable=load_msg, bg=bg, fg='#bcbcbc', font=('Segoe UI', 9)).pack(pady=(0, 6))
 
         pbar = ttk.Progressbar(box, style='Custom.Horizontal.TProgressbar', orient='horizontal', mode='determinate', maximum=100)
-        pbar.pack(fill='x', pady=(0, 20))
+        pbar.pack(fill='x', pady=(0, 18))
 
         start_btn = tk.Button(
             box, text='BẮT ĐẦU', command=login, bg='#333333', fg='#888888',
@@ -228,7 +268,7 @@ def main():
         start_btn.pack(fill='x', pady=6)
 
         steps = [
-            (20, 'Đang tải giao diện & DPI Scaling...'),
+            (20, 'Đang tải giao diện & logo ThanhDevHub...'),
             (45, 'Đang nạp cấu hình người dùng...'),
             (75, 'Đang chuẩn bị kết nối Gemini API...'),
             (100, 'Hệ thống đã sẵn sàng!')
@@ -260,7 +300,7 @@ def main():
         clear()
         status.set('Nhập hoặc dán Gemini API Key để tiếp tục.')
 
-        label('SOLVER PRO / V8', 18)
+        header_with_logo('SOLVER PRO / V8', 17)
         label('Kết nối Gemini API', 11, color='#bcbcbc')
 
         key_entry = tk.Entry(
@@ -301,7 +341,7 @@ def main():
     def home():
         nonlocal result
         clear()
-        label('SOLVER PRO / V8', 16)
+        header_with_logo('SOLVER PRO / V8', 15)
         state()
 
         entry = tk.Text(
@@ -501,7 +541,7 @@ def main():
         canvas.bind('<ButtonRelease-1>', drag)
 
         def back():
-            root.geometry('380x600')
+            root.geometry('380x610')
             home()
 
         def submit():
