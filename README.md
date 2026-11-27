@@ -21,12 +21,10 @@
 ## 📁 Cấu trúc thư mục dự án
 
 ```text
-📦 SolverProV8/
+📦 Tool-AI/
  ┣ 📜 index.html                         # Trang Web giới thiệu & tải trực tiếp bản cài đặt
  ┣ 🖼️ logo.jpg                           # Logo thương hiệu ThanhDevHub (dùng chung toàn hệ thống)
- ┣ 📂 dist/
- ┃ ┗ 🚀 SolverProV8.exe                  # Bản Desktop chạy ngay (độc lập, không cần cài đặt)
- ┣ 📂 build/                             # Thư mục tạm sinh ra khi đóng gói PyInstaller (có thể xóa)
+ ┣ 🚀 SolverProV8.exe                    # Bản Desktop chạy ngay (độc lập, không cần cài đặt)
  ┣ 📜 solver_pro_v8.py                   # Mã nguồn Python gốc của ứng dụng Desktop
  ┣ 📜 SolverProV8.spec                   # File cấu hình đóng gói PyInstaller
  ┣ 📦 SolverProV8_Extension_Flat.zip     # Gói tiện ích mở rộng cho Chrome / Edge / Cốc Cốc
@@ -34,18 +32,18 @@
 ```
 
 > **Lưu ý vị trí `logo.jpg`:**
-> * Đặt **`logo.jpg`** ngang hàng với **`index.html`** và **`solver_pro_v8.py`** để tự động hiển thị trên Web, App Desktop và tự động nhúng vào gói Extension khi tải từ Web.
-> * Nếu cài Extension thủ công từ file `.zip` rời, hãy chép thêm **`logo.jpg`** vào cùng thư mục chứa `manifest.json`.
+> * Đặt **`logo.jpg`** ngang hàng với **`index.html`** và **`solver_pro_v8.py`** để tự động hiển thị trên Web và App Desktop (cũng như nhúng vào `.exe` khi đóng gói).
+> * Gói **`SolverProV8_Extension_Flat.zip`** mới đã tối ưu để nạp trực tiếp mà không bắt buộc phải có `logo.jpg` trong thư mục Extension (nếu bạn chép thêm `logo.jpg` vào cùng thư mục `manifest.json`, giao diện popup vẫn tự động hiển thị logo).
 
 ---
 
 ## ✨ Tính năng nổi bật
 
-* **🖥️ Chụp vùng màn hình / Tab web trực tiếp:** Kéo chuột khoanh vùng đề bài để AI xử lý ngay (tự động khử lệch tọa độ khi bật Windows Scaling `125%–150%`).
-* **📋 Dán thông minh (`Ctrl + V`):** Tự động nhận diện ảnh chụp màn hình từ Clipboard (`Win + Shift + S`) hoặc văn bản để gửi giải ngay trong 1 thao tác.
-* **✂️ Cắt vùng & Tải file ảnh:** Hỗ trợ mở file `PNG`, `JPG`, `JPEG`, `WEBP` (tối đa `10 MB`) để khoanh vùng từng câu hỏi hoặc giải toàn bộ ảnh.
-* **🤖 Tự động dò tìm & xếp hạng Model:** Tự động quét danh sách model `gemini-*` khả dụng, ưu tiên bản `Flash` / `Lite` ổn định mới nhất và tự chuyển sang model dự phòng nếu gặp lỗi.
-* **🔑 Lưu cấu hình tự động:** Ghi nhớ Gemini API Key sau lần kết nối đầu tiên (lưu cục bộ trong `%APPDATA%` với bản Desktop hoặc `chrome.storage.local` với bản Extension).
+- **🖥️ Chụp vùng màn hình / Tab web trực tiếp:** Kéo chuột khoanh vùng đề bài để AI xử lý ngay (tự động khử lệch tọa độ khi bật Windows Scaling `125%–150%`).
+- **📋 Dán thông minh (`Ctrl + V`):** Tự động nhận diện ảnh chụp màn hình từ Clipboard (`Win + Shift + S`) hoặc văn bản để gửi giải ngay trong 1 thao tác.
+- **✂️ Cắt vùng & Tải file ảnh:** Hỗ trợ mở file `PNG`, `JPG`, `JPEG`, `WEBP` (tối đa `10 MB`) để khoanh vùng từng câu hỏi hoặc giải toàn bộ ảnh.
+- **🤖 Tự động dò tìm & xếp hạng Model:** Tự động quét danh sách model `gemini-*` khả dụng, ưu tiên bản `Flash` / `Lite` ổn định mới nhất và tự chuyển sang model dự phòng nếu gặp lỗi.
+- **🔑 Lưu cấu hình tự động:** Ghi nhớ Gemini API Key sau lần kết nối đầu tiên (lưu cục bộ trong `%APPDATA%` với bản Desktop hoặc `chrome.storage.local` với bản Extension).
 
 ---
 
@@ -53,7 +51,7 @@
 
 ### Cách 1: Chạy trực tiếp bằng file `.EXE` (Windows — Không cần cài Python)
 
-1. Mở thư mục **`dist`** và nhấp đúp vào **`SolverProV8.exe`** (hoặc tải trực tiếp từ trang **`index.html`**).
+1. Nhấp đúp vào **`SolverProV8.exe`** (hoặc tải trực tiếp từ **[SolverProV8.exe](https://raw.githubusercontent.com/Nguyentrungthanhctut/Tool-AI/main/SolverProV8.exe)** / trang **`index.html`**).
 2. Chờ thanh khởi động chạy hoàn tất **`100%`**, nhấn **`BẮT ĐẦU →`**.
 3. Nhấn **`Dán API Key`** (hoặc nhập thủ công) → nhấn **`Kiểm tra & Kết nối`**.
 
@@ -81,7 +79,7 @@ pyinstaller --noconsole --onefile --icon=logo.jpg --add-data "logo.jpg;." --name
 
 ### Cách 3: Cài đặt Extension trên Trình duyệt (Chrome / Edge / Cốc Cốc)
 
-1. Giải nén file **`SolverProV8_Extension_Flat.zip`** ra thư mục `SolverProV8_Extension_Flat` (chép kèm file **`logo.jpg`** vào thư mục này nếu chưa có).
+1. Giải nén file **`SolverProV8_Extension_Flat.zip`** ra thư mục `SolverProV8_Extension_Flat` (gồm 5 tệp `manifest.json`, `popup.html`, `popup.css`, `popup.js`, `content.js` nằm trực tiếp bên trong).
 2. Mở trình duyệt và truy cập **`chrome://extensions`** (hoặc **`edge://extensions`**).
 3. Bật công tắc **Developer mode (Chế độ dành cho nhà phát triển)** ở góc trên bên phải.
 4. Nhấn **Load unpacked (Tải tiện ích đã giải nén)** → chọn thẳng thư mục **`SolverProV8_Extension_Flat`** chứa file `manifest.json`.
@@ -107,10 +105,10 @@ pyinstaller --noconsole --onefile --icon=logo.jpg --add-data "logo.jpg;." --name
 2. Chọn **Get API key** → **Create API key** → sao chép chuỗi khóa.
 3. Dán vào màn hình kết nối của **Solver Pro V8**.
 
-* **Nơi lưu Key tự động:**
-  * Bản Desktop: `%APPDATA%\SolverProV8\config.json`
-  * Bản Extension: `chrome.storage.local` của trình duyệt
-* **Đổi / Xóa Key:** Bấm **`Đổi API`** ngay trong giao diện để ghi đè key mới bất kỳ lúc nào.
+- **Nơi lưu Key tự động:**
+  - Bản Desktop: `%APPDATA%\SolverProV8\config.json`
+  - Bản Extension: `chrome.storage.local` của trình duyệt
+- **Đổi / Xóa Key:** Bấm **`Đổi API`** ngay trong giao diện để ghi đè key mới bất kỳ lúc nào.
 
 ---
 
@@ -123,9 +121,9 @@ Nhấn <b>More info</b> → chọn <b>Run anyway</b>. Cảnh báo này xuất hi
 </details>
 
 <details>
-<summary><b>2. Lỗi <i>"Tệp kê khai bị thiếu hoặc không thể đọc được"</i> hoặc thiếu icon khi cài Extension</b></summary>
+<summary><b>2. Lỗi <i>"Tệp kê khai bị thiếu hoặc không thể đọc được"</i> khi cài Extension</b></summary>
 <br>
-Đảm bảo bạn đã <b>giải nén</b> file <code>.zip</code>, đặt file <code>logo.jpg</code> ngang hàng với <code>manifest.json</code>, và chọn đúng thư mục chứa trực tiếp <code>manifest.json</code> khi bấm <b>Load unpacked</b>.
+Đảm bảo bạn đã <b>giải nén</b> file <code>.zip</code> và chọn đúng thư mục chứa trực tiếp <code>manifest.json</code> khi bấm <b>Load unpacked</b> (tránh chọn nhầm thư mục cha bên ngoài hoặc file <code>.zip</code> chưa giải nén).
 </details>
 
 <details>
